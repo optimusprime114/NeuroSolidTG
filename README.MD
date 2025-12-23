@@ -94,7 +94,7 @@ Navigate to your root testing directory (`test_neurosolidtg`) and run the tool u
 ```bash
 docker run --rm \
     -v "$(pwd):/data" \
-    -v "$(pwd)/soltg_results:/app/test" \
+    -v "$(pwd)/results:/app/test" \
     optimusprime114/neurosolidtg:latest \
     -i /data/myproject/test1.sol \
     -t <TIMEOUT_SECONDS>
@@ -106,7 +106,7 @@ docker run --rm \
 ```bash
 docker run --rm \
     -v "$(pwd):/data" \
-    -v "$(pwd)/soltg_results:/app/test" \
+    -v "$(pwd)/results:/app/test" \
     optimusprime114/neurosolidtg:latest \
     -i /data/myproject/test1.sol \
     -t <TIMEOUT_SECONDS> \
