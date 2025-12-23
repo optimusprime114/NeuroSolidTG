@@ -114,6 +114,7 @@ docker run --rm \
     --k 5
 
 ```
+Further you can use ./run.sh to run all the contracts in /myproject at once. Results get stored in a results_combined.
 
 ---
 
@@ -348,4 +349,5 @@ contract contract_under_test_Test is Test {
 }
 
 ```
-
+**Note**
+For the reviewer. If Claude API KEY is needed you can email at the following anonymized email : 411optimusprime411@gmail.com
