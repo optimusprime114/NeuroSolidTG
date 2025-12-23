@@ -1,8 +1,8 @@
-# **SolTG++**
+# **NeuroSolidTG**
 
-**SolTG++** is an advanced neuro-symbolic test case generator for Solidity smart contracts. It is an extension of **SolTG+**, which builds upon the original implementation of [SolTG](https://www.google.com/search?q=https://github.com/BritikovKI/solidity_testgen/tree/main).
+**NeuroSolidTG** is an advanced neuro-symbolic test case generator for Solidity smart contracts. It builds upon the original implementation of [SolTG](https://www.google.com/search?q=https://github.com/BritikovKI/solidity_testgen/tree/main).
 
-SolTG++ leverages Large Language Models (LLMs) alongside symbolic execution to generate high-coverage test cases and detect vulnerabilities.
+NeuroSolidTG leverages Large Language Models (LLMs) alongside symbolic execution to generate high-coverage test cases and detect vulnerabilities.
 
 ## **Getting Started**
 
@@ -82,32 +82,32 @@ sudo apt install docker.io
 Pull the latest Linux AMD64 image:
 
 ```bash
-docker pull optimusprime114/soltg-plus-plus:latest
+docker pull optimusprime114/neurosolidtg:latest
 
 ```
 
 **Step 3: Run the Tool**
-Navigate to your root testing directory (`test_soltg`) and run the tool using one of the following commands.
+Navigate to your root testing directory (`test_neurosolidtg`) and run the tool using one of the following commands.
 
-*For SolTG+:*
+*For SolidTG:*
 
 ```bash
 docker run --rm \
     -v "$(pwd):/data" \
     -v "$(pwd)/soltg_results:/app/test" \
-    optimusprime114/soltg-plus-plus:latest \
+    optimusprime114/neurosolidtg:latest \
     -i /data/myproject/test1.sol \
     -t <TIMEOUT_SECONDS>
 
 ```
 
-*For SolTG++ (Neuro-Symbolic / LLM Enhanced):*
+*For NeuroSolidTG (Neuro-Symbolic / LLM Enhanced):*
 
 ```bash
 docker run --rm \
     -v "$(pwd):/data" \
     -v "$(pwd)/soltg_results:/app/test" \
-    optimusprime114/soltg-plus-plus:latest \
+    optimusprime114/neurosolidtg:latest \
     -i /data/myproject/test1.sol \
     -t <TIMEOUT_SECONDS> \
     --apiKey <YOUR_ANTHROPIC_API_KEY> \
@@ -175,23 +175,23 @@ sudo make install
 
 ### **Method 2: Using Pip Package**
 
-Once all prerequisites above are installed, you can simply install the package via pip (version 0.1.16).
+Once all prerequisites above are installed, you can simply install the package via pip (version 0.1.0).
 
 ```bash
-pip install soltg-plus-plus
+pip install NeuroSolidTG
 
 ```
 
-**Usage:** For soltg++
+**Usage:** For NeuroSolidTG
 
 ```bash
-soltg-plus-plus -i <path to input file/directory> -t <timeout in seconds> --apiKey <key>
+neurosolidtg -i <full_path_to_contract> -t <timeout in seconds> --apiKey <key> --k <k>
 
 ```
-**Usage:** For soltg+
+**Usage:** For SolidTG
 
 ```bash
-soltg-plus-plus -i <path to input file/directory> -t <timeout in seconds> 
+neurosolidtg -i <full_path_to_contract> -t <timeout in seconds> 
 
 ```
 ---
@@ -203,8 +203,8 @@ If you prefer to build from source:
 **Step 1: Clone the repository**
 
 ```bash
-git clone https://github.com/optimusprime114/soltg-plus-plus.git
-cd soltg-plus-plus
+git clone https://github.com/optimusprime114/NeuroSolidTG.git
+cd NeuroSolidTG
 
 ```
 
@@ -229,7 +229,7 @@ forge install foundry-rs/forge-std --no-commit
 **Usage:**
 
 ```bash
-solTg-plus-plus -i <path to input file/directory> -t <timeout in seconds> --apiKey <key>
+neurosolidtg -i <full_path_to_contract> -t <timeout in seconds> --apiKey <key>
 
 ```
 
@@ -251,7 +251,7 @@ Current_Directory/
 **Running the command:**
 
 ```bash
-solTg-plus-plus -i ./myproject/Example.sol -t 60 --apiKey <key>
+neurosolidtg -i ~/home/myproject/Example.sol -t 60 --apiKey <key>
 
 ```
 
@@ -264,14 +264,15 @@ This will generate the output in `Current_Directory/test`.
 1. **Requirements for SolCMC to generate the CHC Encoding**:
 * Contracts must not be abstract.
 * There must be at least one `assert` statement (e.g., `assert(true);`) in the contract.
-* SolTG++ will notify if the CHC encoding is not generated.
+* NeuroSolidTG will notify if the CHC encoding is not generated.
 
 
 2. **Input File Compatibility**:
-* If using Docker, input files must be compatible with `solc` version `0.8.29` (pre-installed in container).
+* If using Docker, input files must be compatible with `solc` version `^0.8.0` (pre-installed in container).
 * If running from source (Pip/Git), input files must be compatible with your system's installed `solc` version.
 
-
+3. **System Requirements**
+* The binaries compiled are compiled on linux system with AMD64 hardware. Hence to run on a separate system binaries will have to be recompiled. 
 
 ---
 
@@ -295,22 +296,22 @@ Upon execution, the tool generates a test folder containing specific HTML report
 
 ```text
 test_folder/
-├── SolTGP_report.html
+├── SolidTG_report.html
 └── helper_dir
 
 ```
 
 ### Report Contents
 
-**1. SolTGP_report.html**
-This report is generated when SolTGP is run. It focuses on the standard execution metrics and contains:
+**1. SolidTG_report.html**
+This report is generated when SolidTG is run. It focuses on the standard execution metrics and contains:
 
 * **Foundry Output:** The raw output from the Foundry test execution.
 * **Logs:** System and execution logs during the test run.
 * **Test File:** The generated `.t.sol` source code used for verification.
 
-**2. `SolTGPP.html**`
-This report is generated when SolTGPP is run. It provides a comprehensive view of the neuro-symbolic analysis, including:
+**2. NeuroSolidTG_report.html**
+This report is generated when NeuroSolidTG is run. It provides a comprehensive view of the neuro-symbolic analysis, including:
 
 * **Foundry Output:** The raw output from the Foundry test execution.
 * **Logs:** System and execution logs.
