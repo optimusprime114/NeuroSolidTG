@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NeuroSolidTG"
+version = "0.1.0"
+description = "A neurosymbolic execution tool for Solidity. Pls "
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "attrs",
+    "certifi",
+    "charset-normalizer",
+    "contourpy",
+    "cycler",
+    "cytoolz",
+    "eth-hash",
+    "eth-typing",
+    "eth-utils",
+    "exceptiongroup",
+    "fonttools",
+    "h11",
+    "idna",
+    "Jinja2",
+    "kiwisolver",
+    "MarkupSafe",
+    "matplotlib",
+    "networkx",
+    "outcome",
+    "packaging",
+    "pandas",
+    "pillow",
+    "pip",
+    "pycryptodome",
+    "pyparsing",
+    "PySocks",
+    "python-dateutil",
+    "pytz",
+    "requests",
+    "selenium",
+    "setuptools",
+    "six",
+    "sniffio",
+    "solTg-plus",
+    "sortedcontainers",
+    "toolz",
+    "trio",
+    "trio-websocket",
+    "typing_extensions",
+    "tzdata",
+    "urllib3",
+    "wsproto",
+    "XlsxWriter",
+    "zipp"
+]
+
+[project.scripts]
+neurosolidtg = "soltgfrontend.solTg.RunAll:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+soltgfrontend = ["deps/*", "prompt.txt"]

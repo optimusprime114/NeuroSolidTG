@@ -1,0 +1,92 @@
+Introduction:
+You are the part of SOLTG enhancement which is a faster version of the original smart contract verification tool. 
+You will be given contract metadata and the contract data with function call sequences. 
+You have to look at the function call sequences and decide which certainly have lead to a security vulnerability. 
+Give me at max {LEN} queries that are exposing security vulnerabilities DEFINITELY.
+
+Rules:
+1. For every contract a metadata and a glossary is provided. This Glossary maps Functions in the Programs to indexes. This Indexes are used in the function call sequences ahead. hence look at the glossary to connect a function call sequence with relevant functions and their definitions in the contract
+1. Output Format : if the most vulnerable query is index 3, followed by 1, 4, 2, and 5, return: 
+Output: {3 : Description} {1 : Description} {4 : Description} {2 : Description} {5 : Description}
+Here 3, 1, 4, 2, 5 are index of the queries and NOT the function IDs as given in glossary
+2. IF THE CONTRACT IS NOT VULNERABLE with any function call sequence possible, DO NOT RETURN ANY SEQUENCE. 
+IF YOU THINK THE SEQUENCE IS NOT VULNERABLE REMOVE IT. JUST RETAIN THE VULNERABLE SEQUENCES. 
+If the number of definitely vulnerable sequences is less than the given number then dont add safe sequences on your own.
+3. IF YOU THINK NO SEQUENCES ARE VULNERABLE THEN DO NOT RETURN ANY SEQUENCE AT ALL.
+
+
+Examples:
+Examples of vulnerabilities are : reentrancy, uninitialized storage, integer overflows/underflows, bad randomness, access control flaws, 
+and other known smart contract vulnerabilities. Also mention about front running, Denial of service.
+Examples of vulnerable contracts:
+1. Access Control:
+function initContract() public {
+	owner = msg.sender;
+}
+2. Arithmetic (integer underflow):
+function withdraw(uint _amount) {
+	require(balances[msg.sender] - _amount > 0);
+	msg.sender.transfer(_amount);
+	balances[msg.sender] -= _amount;
+}
+3. Bad Randomness:
+uint256 private seed;
+function play() public payable {
+	require(msg.value >= 1 ether);
+	iteration++;
+	uint randomNumber = uint(keccak256(seed + iteration));
+	if (randomNumber % 2 == 0) {
+		msg.sender.transfer(this.balance);
+	}
+}
+4. Denial of service:
+function becomePresident() payable {
+	require(msg.value >= price);
+	president.transfer(price);
+	president = msg.sender;
+	price = price * 2;
+}
+5. Re-entrancy:
+function withdraw(uint _amount) {
+	require(balances[msg.sender] >= _amount);
+	msg.sender.call.value(_amount)();
+	balances[msg.sender] -= _amount;
+}
+You can look at other contract vulnerabilities too.
+
+Contract:
+contract InsecureOwnership {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function transferOwnership(address newOwner) public {
+        owner = newOwner;
+    }
+
+    function privilegedAction() public view returns (string memory) {
+        require(msg.sender == owner, "Not the owner");
+        return "You have access";
+    }
+}
+
+Metadata :
+InsecureOwnership: {
+  transferOwnership: [state, msg.sender, newOwner], 
+  privilegedAction: [state, msg.sender], 
+  contract_InsecureOwnership: [state, msg.sender]
+}
+
+GLOSSARY: This contains all the index to function Mapping.
+1. transferOwnership -> 10
+2. privilegedAction -> 22
+
+Queries:
+1. (10 -> 22)
+2. (10 -> 10)
+3. (22 -> 22)
+
+Output: 
+{1: Access Control}

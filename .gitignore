@@ -1,0 +1,27 @@
+# --- 1. GLOBAL IGNORES (Apply everywhere, even inside allowed folders) ---
+.venv/
+.git/
+.vscode/
+__pycache__/
+*.pyc
+.DS_Store
+
+# --- 2. IGNORE EVERYTHING IN ROOT BY DEFAULT ---
+# This ensures 'soltgbackend', 'test_combined', etc. are IGNORED automatically
+/*
+
+# --- 3. WHITELIST: ONLY ALLOW THESE FOLDERS ---
+!/soltgfrontend/
+!/benchmark_set/
+!/myproject/
+
+# --- 4. WHITELIST: ALLOW ROOT FILES ---
+!Dockerfile
+!.gitignore
+!LICENSE
+!README.MD
+!MANIFEST.in
+!*.txt
+!*.toml
+!*.sh
+!*.in
