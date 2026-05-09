@@ -1,6 +1,7 @@
 import os
 import re
 import glob
+import json
 import argparse
 import pandas as pd
 from jinja2 import Template
@@ -151,6 +152,12 @@ class ModernReportBuilder:
         if test_log_path:
             test_log_content = self._read_file_safe(test_log_path)
 
+        # Find Foundry coverage HTML in output_dir
+        coverage_html_rel = None
+        cov_matches = glob.glob(os.path.join(self.output_dir, "**", "generated-coverage", "index.html"), recursive=True)
+        if cov_matches:
+            coverage_html_rel = os.path.relpath(cov_matches[0], self.output_dir)
+
         row = {
             'contract_name': contract_name,
             'dir_path': path,
@@ -165,7 +172,8 @@ class ModernReportBuilder:
             'generated_test_path': gen_test_path,
             'generated_test_content': gen_test_content,
             'log_content': log_content,
-            'test_log_content': test_log_content
+            'test_log_content': test_log_content,
+            'coverage_html_rel': coverage_html_rel
         }
         self.data.append(row)
     
@@ -341,10 +349,16 @@ class ModernReportBuilder:
                                         📄 log.txt
                                     </button>
                                 {% endif %}
-                                
+
                                 {% if row.test_log_content %}
                                     <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#foundryLogModal{{ loop.index }}">
                                         🔨 Foundry output
+                                    </button>
+                                {% endif %}
+
+                                {% if row.coverage_html_rel %}
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#covModal{{ loop.index }}">
+                                        📊 Coverage Report
                                     </button>
                                 {% endif %}
                             </div>
@@ -356,7 +370,7 @@ class ModernReportBuilder:
         </div>
 
         {% for row in data %}
-        
+
             {% if row.sol_content %}
             <div class="modal fade" id="solModal{{ loop.index }}" tabindex="-1">
                 <div class="modal-dialog modal-xl">
@@ -456,6 +470,23 @@ class ModernReportBuilder:
                             <button class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body"><pre>{{ row.test_log_content }}</pre></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if row.coverage_html_rel %}
+            <div class="modal fade" id="covModal{{ loop.index }}" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title">Coverage Report: {{ row.contract_name }}</h5>
+                            <a href="{{ row.coverage_html_rel }}" target="_blank" class="btn btn-sm btn-light ms-auto me-2">Open in new tab ↗</a>
+                            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-0" style="height: 80vh;">
+                            <iframe src="{{ row.coverage_html_rel }}" style="width:100%; height:100%; border:none;"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -578,10 +609,16 @@ class ModernReportBuilder:
                                         📄 log.txt
                                     </button>
                                 {% endif %}
-                                
+
                                 {% if row.test_log_content %}
                                     <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#foundryLogModal{{ loop.index }}">
                                         🔨 Foundry output
+                                    </button>
+                                {% endif %}
+
+                                {% if row.coverage_html_rel %}
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#covModal{{ loop.index }}">
+                                        📊 Coverage Report
                                     </button>
                                 {% endif %}
                             </div>
@@ -664,6 +701,23 @@ class ModernReportBuilder:
             </div>
             {% endif %}
 
+            {% if row.coverage_html_rel %}
+            <div class="modal fade" id="covModal{{ loop.index }}" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title">Coverage Report: {{ row.contract_name }}</h5>
+                            <a href="{{ row.coverage_html_rel }}" target="_blank" class="btn btn-sm btn-light ms-auto me-2">Open in new tab ↗</a>
+                            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-0" style="height: 80vh;">
+                            <iframe src="{{ row.coverage_html_rel }}" style="width:100%; height:100%; border:none;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
         {% endfor %}
 
         <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -684,6 +738,51 @@ class ModernReportBuilder:
         with open(os.path.join(self.output_dir, "SolidTG_Report.html"), "w", encoding="utf-8") as f:
             f.write(Template(template_str).render(data=self.data, timestamp=datetime.now()))
         print(f"HTML (Simplified) saved: {os.path.join(self.output_dir, 'SolidTG_Report.html')}")
+
+    def generate_json(self):
+        if not self.data:
+            return
+        print(f"Generating JSON in {self.output_dir}...")
+
+        output = []
+        for row in self.data:
+            entry = {
+                "contract_name": row["contract_name"],
+                "z3_status": row["z3_status"],
+                "time_seconds": row["time_seconds"],
+                "smt2_files": [
+                    {
+                        "name": s["name"],
+                        "path": s["path"],
+                        "lines": s["lines"],
+                        "content": s["content"],
+                    }
+                    for s in row["smt2_info"]
+                ],
+                "llm_outputs": [
+                    {
+                        "sequence": v["sequence_length"],
+                        "file_path": v["file_path"],
+                        "content": v["content"],
+                    }
+                    for v in row["llm_vulns"]
+                ],
+                "generated_test": {
+                    "path": row["generated_test_path"],
+                    "content": row["generated_test_content"],
+                },
+                "foundry_report": {
+                    "test_results": row["test_log_content"],
+                    "coverage_html_rel": row["coverage_html_rel"],
+                },
+            }
+            output.append(entry)
+
+        out_path = os.path.join(self.output_dir, "report.json")
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(output, f, indent=2, default=str)
+        print(f"JSON saved: {out_path}")
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

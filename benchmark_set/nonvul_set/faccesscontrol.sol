@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// soltgpp_dataset/Smart-Contracts-Fuzzer/Fixed Contracts/faccesscontrol.sol
-
+/**
+ * @title bank_fixed
+ * @dev This contract is fixed for Reentrancy and DoS vulnerabilities.
+ */
 contract bank {
     address public owner;
     uint256 public balance;
@@ -23,6 +25,11 @@ contract bank {
         balance += msg.value;
     }
 
+    /**
+     * @dev Fixed withdraw function.
+     * 1. Applies Checks-Effects-Interactions pattern to prevent reentrancy.
+     * 2. Uses .call() instead of .transfer() to prevent DoS.
+     */
     function withdraw(uint256 amount) external onlyOwner {
         assert(true);
         // 1. Check

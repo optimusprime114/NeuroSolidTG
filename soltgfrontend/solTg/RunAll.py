@@ -270,6 +270,7 @@ def main():
     else:
         yo.generate_html()
     yo.generate_excel()
+    yo.generate_json()
     # html_report.build_excel_report(OUTPUTDIR)
     # clean_dir(SANDBOX_DIR)
     shutil.rmtree(SANDBOX_DIR)

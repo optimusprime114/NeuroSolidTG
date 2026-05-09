@@ -1,8 +1,6 @@
 # **NeuroSolidTG**
 
-**NeuroSolidTG** is an advanced neuro-symbolic test case generator for Solidity smart contracts. It builds upon the original implementation of [SolTG](https://www.google.com/search?q=https://github.com/BritikovKI/solidity_testgen/tree/main).
-
-NeuroSolidTG leverages Large Language Models (LLMs) alongside symbolic execution to generate high-coverage test cases and detect vulnerabilities.
+**NeuroSolidTG** leverages Large Language Models (LLMs) alongside symbolic execution to generate high-coverage test cases and detect vulnerabilities. This is first of its kind neurosymbolic analysis tool.
 
 ## **Getting Started**
 

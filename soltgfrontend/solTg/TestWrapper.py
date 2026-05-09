@@ -591,12 +591,12 @@ class TestWrapper:
                             continue
                         
                         active_contract_name = c_name  # Set the context for which contract we are testing
-                        
+
                         # REQUIREMENT 1: Parse constructor arguments using the helper function
                         constructor_signature = self.signature[i][0]
-                        # We only need the args string for the constructor call
-                        _, _, constructor_args = self._parse_and_format_args(tt, constructor_signature)
-                        
+                        _, constructor_sender, constructor_args = self._parse_and_format_args(tt, constructor_signature)
+
+                        setUp.append(f"\t\tvm.prank({constructor_sender});\n")
                         setUp.append(f"\t\t{contract_vars[i]} = new {c_name}{constructor_args};\n")
                         break
 
@@ -620,13 +620,7 @@ class TestWrapper:
                     value, sender, args = self._parse_and_format_args(calls, fun_signature)
 
                     ucall = f_name + args
-                    
-                    # Handle address(0) sender case with a valid random address
-                    if str(sender) == "0x0000000000000000000000000000000000000000":
-                        random_addr_hex = hex(random.randint(1, 2**160 - 1))
-                        full_random_hex = '0x' + random_addr_hex[2:].zfill(40)
-                        sender = to_checksum_address(full_random_hex)
-                    
+
                     test_body.append(f"\t\tvm.prank({sender});\n")
                     if int(value) > 0:
                         test_body.append(f"\t\tvm.deal({sender}, {value} wei);\n")

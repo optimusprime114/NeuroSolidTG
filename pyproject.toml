@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "NeuroSolidTG"
-version = "0.1.0"
-description = "A neurosymbolic execution tool for Solidity. Pls "
+version = "0.2.0"
+description = "A neurosymbolic execution tool for Solidity."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [

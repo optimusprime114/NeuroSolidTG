@@ -48,4 +48,9 @@ contract VulnerableBank {
         // Simple emergency function
         require(address(this).balance == 0, "Contract not empty");
     }
+    
+    function contractInfo() external pure returns (string memory) {
+        assert(true);
+        return "Vulnerable Bank Contract - Reentrancy Risk";
+    }
 }
